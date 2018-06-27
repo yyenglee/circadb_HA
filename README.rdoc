@@ -1,9 +1,7 @@
-<<<<<<< HEAD
 = CircaDB
 === A Database of Circadian Gene Expression Profiles
 
-This is an update version of CircaDB, with human atlas available.
+This is an updated version of CircaDB, with human atlas available.
 Please visit https://github.com/khayer/circadb for more information.
 =======
->>>>>>> 9c3b6c5a393637946d85507e21cd39c2a174c4e9
 
