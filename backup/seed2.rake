@@ -30,7 +30,7 @@ namespace :bootstrap do
       exit(0)
     end
     cfg = ActiveRecord::Base.configurations[Rails.env]
-    system("mysql -u #{cfg["username"]} #{ cfg["password"] ? "-p" + cfg["password"] : "" } " +
+    system("mysql -u #{cfg["username"]} #{ cfg["password"] ? "-p" + cfg["password"].to_s : "" } " +
            " #{ "-h " + cfg["host"] if cfg["host"] } #{cfg["database"]} < circa_db.sql")
   end
 

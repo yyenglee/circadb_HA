@@ -1,19 +1,19 @@
 .span-10.last
   %table
-    -for @probeset_stat in @probeset_stats do
-      - @probeset_data = @probeset_stat.probeset_data
-      - @probeset = @probeset_stat.probeset
+    -for @human_stat in @human_stats do
+      - @human_data = @human_stat.probeset_data
+      - @probeset = @human_stat.probeset
       %tr
         %td
           %table{:style => "border: 1px solid #FFF; margin: 2px;"}
             %tr
               %td.span-4{:style => "border: 1px solid #FFF; padding: 2px; "}
-                =link_to(image_tag(@probeset_data.chart_url(150,150), :alt => "#{@probeset_data.probeset_name} Data"), root_path, :params => params)
+                =link_to(image_tag(@human_data.chart_url(150,150), :alt => "#{@human_data.probeset_name} Data"), root_path, :params => params)
               %td{:style => "border: 1px solid #FFF; padding: 2px;"}
                 %table{:style => "border: 1px solid #FFF; padding: 2px;"}
                   %tr
                     %th.span-2 Assay Tissue
-                    %td=@probeset_data.assay_name
+                    %td=@human_data.assay_name
                   %tr
                     %th Probeset
                     %td=@probeset.probeset_name
@@ -44,32 +44,22 @@
                 %tr
                   %th &nbsp;
                   %th p-Value
-                  %th q-Value
-                  %th period
+                  %th FDR-Value
+                  %th R-square
+                  %th relative AMP
                   %th phase
                 %tr
                   %th JTK
-                  %td= @probeset_stat.jtk_q_value
-                  %td= @probeset_stat.jtk_p_value
-                  %td= @probeset_stat.jtk_period_length
-                  %td= @probeset_stat.jtk_lag
-                %tr
-                  %th Lomb Scargle
-                  %td= @probeset_stat.cosopt_p_value
-                  %td= @probeset_stat.cosopt_q_value
-                  %td= @probeset_stat.cosopt_period_length
-                  %td= @probeset_stat.cosopt_phase
-                %tr
-                  %th DeLichtenberg
-                  %td= @probeset_stat.fisherg_p_value
-                  %td= @probeset_stat.fisherg_q_value
-                  %td= @probeset_stat.fisherg_period_length
-                  %td <i>NA</i>
+                  %td= @human_stat.cyclop_FDR_value
+                  %td= @human_stat.cyclop_p_value
+                  %td= @human_stat.cyclop_rsqr
+                  %td= @human_stat.cyclop_rAMP
+                  %td= @human_stat.cyclop_phase
 
 .push-1.span-9.last
   %table{:style => "border: 0px solid #FFF; margin: 2px;"}
     %td
-      Total hits #{@probeset_stats.total_entries}
+      Total hits #{@human_stats.total_entries}
     %td
       .paginate
-        = will_paginate @probeset_stats
+        = will_paginate @human_stats

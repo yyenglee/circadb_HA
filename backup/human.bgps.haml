@@ -1,0 +1,65 @@
+.span-10.last
+  %table
+    -for @human_stat in @human_stats do
+      - @human_data = @human_stat.human_data
+      - @probeset = @human_stat.probeset
+      %tr
+        %td
+          %table{:style => "border: 1px solid #FFF; margin: 2px;"}
+            %tr
+              %td.span-4{:style => "border: 1px solid #FFF; padding: 2px; "}
+                =link_to(image_tag(@human_data.chart_url(150,150), :alt => "#{@human_data.probeset_name} Data"), root_path, :params => params)
+              %td{:style => "border: 1px solid #FFF; padding: 2px;"}
+                %table{:style => "border: 1px solid #FFF; padding: 2px;"}
+                  %tr
+                    %th.span-2 Assay Tissue
+                    %td=@human_data.human_assay_name
+                  %tr
+                    %th Probeset
+                    %td=@probeset.probeset_name
+                  %tr
+                    %th Symbol
+                    %td=@probeset.gene_symbol_url
+                  %tr
+                    %th Unigene
+                    %td=@probeset.unigene_url
+                  %tr
+                    %th RefSeq Protein
+                    %td=@probeset.refseq_protein_url
+                  %tr
+                    %th RefSeq DNA
+                    %td=@probeset.refseq_transcript_url
+                  %tr
+                    %th Description
+                    %td=@probeset.gene_title
+                  %tr
+                    %th Links
+                    %td=@probeset.wiki_url
+                  %tr
+                    %th
+                    %td=@probeset.homolo_gene_url
+            %tr
+              %td{:colspan=>2}
+              %table
+                %tr
+                  %th &nbsp;
+                  %th p-Value
+                  %th FDR-Value
+                  %th R-square
+                  %th relative AMP
+                  %th phase
+                %tr
+                  %th JTK
+                  %td= @human_stat.cyclop_p_value
+                  %td= @human_stat.cyclop_FDR_value
+                  %td= @human_stat.cyclop_rsqr
+                  %td= @human_stat.cyclop_rAMP
+                  %td= @human_stat.cyclop_phase
+
+.push-1.span-9.last
+  %table{:style => "border: 0px solid #FFF; margin: 2px;"}
+    %td
+      Total hits #{@human_stats.total_entries}
+    %td
+      .paginate
+        = will_paginate @human_stats

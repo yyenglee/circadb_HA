@@ -1,0 +1,147 @@
+.form.span-15.last.push-1{:style => "border-left: 2px double #E5ECF9; padding: 10px;" }
+  = render :partial => "formHuman"
+
+.footer.span-15.last.push-1
+  .count
+    -if @human_stats.total_entries != 0
+      Total hits #{@human_stats.total_entries}
+      = will_paginate @human_stats , :class => "apple_pagination", :params => params, :inner_window => 2
+    -else
+      Total hits #{@human_stats.total_entries}
+
+-if @output_mode == "normal"
+  .results.span-15.last.push-1
+    %table
+      -for @human_stat in @human_stats do
+        - @human_data = @human_stat.human_data
+        - @probeset = @human_stat.probeset
+        %tr
+          %td
+            %table
+              %tr
+                %td{:colspan=>4}
+                  -if @human_data
+                    %div{:id=>@human_data.probeset_name, :style=>"width: 360px; height: 240px"}
+                  -else
+                    NO IMAGE
+                %td{:colspan=>2}
+                  %br== <b>Tissue   </b> #{HumanTissue.find_by_id(@human_stat.human_tissue_id).name}
+                  %br== <b>Gene Symbol  </b> #{@human_data.probeset_name}
+                  -if @human_stat.probeset_id
+                    %br== <b>Links       </b> #{@probeset.wiki_url}  #{@probeset.homolo_gene_url}
+                    %br== <b>Unigene     </b> #{@probeset.unigene_url}
+                    %br== <b>RefSeq Protein </b> #{@probeset.refseq_protein_url}
+                    %br== <b>RefSeq DNA   </b> #{@probeset.refseq_transcript_url}
+                    %br== <b>Description  </b> #{@probeset.gene_title}
+                  -else
+                    %br== <b>Links       </b>
+                    %br== <b>Unigene     </b>
+                    %br== <b>RefSeq Protein </b>
+                    %br== <b>RefSeq DNA   </b>
+                    %br== <b>Description  </b>
+              %tr
+                %th
+                %th P-value
+                %th FDR
+                %th R<sup>2</sup>
+                %th rAMP
+                %th Phase
+              %tr
+                %td= link_to(image_tag('questionmark_orange3.png', :alt=> "Experiment help page"),  human_help_path())
+                %td= @human_stat.pval
+                %td= @human_stat.FDR
+                %td= @human_stat.rsqr
+                %td= @human_stat.ramp
+                %td= @human_stat.phase
+              %tr
+                %td{:colspan=>6,:style => "text-align:right;"}
+                  %a(href="#top")back to the top
+-else
+  -for @human_stat in @human_stats do
+    - @human_data = @human_stat.human_data
+    - @probeset = @human_stat.probeset
+    .results.span-20.last
+      .results.span-5.last
+        -if @human_data
+          %div{:id=>@human_stat.probeset_name, :style=>"width: 175px; height: 100px"}
+        -else
+          NO IMAGE
+      .results.span-15.last
+        %table
+          %tr
+            %td
+              <b>Tissue</b>
+            %td{:colspan=>2}
+              <b>Gene Symbol</b>
+            %td
+              <b>Description    </b>
+          %tr
+            %td
+              ==#{HumanTissue.find_by_id(@human_stat.human_tissue_id).slug}
+            %td{:colspan=>2}
+              ==#{@human_stat.probeset_name}
+            -if @human_stat.probeset_id
+              %td
+                ==#{@probeset.gene_title}
+            -else
+              %td
+
+
+%script{:type=>'text/javascript', :src=>'https://www.gstatic.com/charts/loader.js'}
+:javascript
+  google.charts.load('current', {'packages':['corechart']});
+-@i = 0
+-for @human_stat in @human_stats do
+  - @human_data = @human_stat.human_data
+  :javascript
+    google.charts.setOnLoadCallback(drawChart#{@i});
+    function drawChart#{@i}(){
+      var data = #{@human_data.to_json};
+      var dataPoints = data.human_data.data_points.split(',');
+      var timePoints = data.human_data.time_points.split(',');
+      var base_value = #{@human_stat.cyclop_fitmean};
+      var amp = #{@human_stat.cyclop_amplitude};
+      var phase = #{@human_stat.cyclop_phase};
+      var dataArray = [['Time', 'Data', 'Line']];
+      var maxd = 0, maxt = 0, d, t, l;
+      for(var i = 0; i < dataPoints.length; i++ ) {
+        t = parseFloat(timePoints[i]);
+        d = parseFloat(dataPoints[i]);
+        l = base_value + amp * Math.cos(t - phase);
+        dataArray.push([t, d, l]);
+        maxd = Math.max(maxd, d);
+      }
+
+      var data = google.visualization.arrayToDataTable(dataArray);
+      var options = {
+        hAxis: {minValue: 0,
+            maxValue: 2*Math.PI,
+            gridlines:{color: 'transparent'},
+            viewWindow:{min:0,max:2*Math.PI },
+            ticks: [{v:0, f:'0'},{v:0.5*Math.PI, f:'1/2π'},{v:Math.PI,f:'π'},{v:1.5*Math.PI, f:'3/2π'},{v:2*Math.PI,f:'2π'}]},
+        vAxis: {minValue: 0,
+            maxValue: maxd,
+            gridlines:{color: 'transparent'},
+            viewWindow:{min: 0, max: maxd}
+            },
+        colors: ['#707090','orange'],
+        legend: 'none',
+        interpolateNulls: true,
+        seriesType: 'line',
+        series: {
+          0: {pointSize: 2, lineWidth: 0},
+          1: {pointSize: 1, lineWidth: 3}
+        },
+        chartArea: {height:'75%', width:'80%'}
+      };
+
+      var chart = new google.visualization.ComboChart(document.getElementById('#{@human_data.probeset_name}'));
+      chart.draw(data, options);
+    }
+  -@i += 1
+
+.footer.span-15.last.push-1
+  .count
+  -if @human_stats.total_entries != 0
+    Total hits #{@human_stats.total_entries}
+    = will_paginate @human_stats, :class => "apple_pagination", :params => params

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20101111205706) do
+ActiveRecord::Schema.define(:version => 20180530122923) do
 
   create_table "assays", :force => true do |t|
     t.string  "slug"
@@ -27,6 +27,55 @@ ActiveRecord::Schema.define(:version => 20101111205706) do
   end
 
   add_index "gene_chips", ["slug"], :name => "index_gene_chips_on_slug", :unique => true
+
+  create_table "human_datas", :force => true do |t|
+    t.integer "human_tissue_id"
+    t.integer "probeset_id"
+    t.string  "human_tissue_name"
+    t.string  "probeset_name"
+    t.string  "time_points",       :limit => 2000
+    t.string  "data_points",       :limit => 2000
+  end
+
+  add_index "human_datas", ["human_tissue_id"], :name => "index_human_datas_on_human_tissue_id"
+  add_index "human_datas", ["human_tissue_name"], :name => "index_human_datas_on_human_tissue_name"
+  add_index "human_datas", ["probeset_id"], :name => "index_human_datas_on_probeset_id"
+  add_index "human_datas", ["probeset_name"], :name => "index_human_datas_on_probeset_name"
+
+  create_table "human_stats", :force => true do |t|
+    t.integer "human_tissue_id"
+    t.integer "human_data_id"
+    t.integer "probeset_id"
+    t.string  "human_tissue_name"
+    t.string  "probeset_name"
+    t.float   "cyclop_fitmean"
+    t.float   "cyclop_amplitude"
+    t.float   "cyclop_phase"
+    t.float   "cyclop_p_value"
+    t.float   "cyclop_FDR_value"
+    t.float   "cyclop_rsqr"
+    t.float   "cyclop_rAMP"
+  end
+
+  add_index "human_stats", ["cyclop_FDR_value"], :name => "index_human_stats_on_cyclop_FDR_value"
+  add_index "human_stats", ["cyclop_p_value"], :name => "index_human_stats_on_cyclop_p_value"
+  add_index "human_stats", ["cyclop_rAMP"], :name => "index_human_stats_on_cyclop_rAMP"
+  add_index "human_stats", ["cyclop_rsqr"], :name => "index_human_stats_on_cyclop_rsqr"
+  add_index "human_stats", ["human_data_id"], :name => "index_human_stats_on_human_data_id"
+  add_index "human_stats", ["human_tissue_id"], :name => "index_human_stats_on_human_tissue_id"
+  add_index "human_stats", ["human_tissue_name"], :name => "index_human_stats_on_human_tissue_name"
+  add_index "human_stats", ["probeset_id"], :name => "index_human_stats_on_probeset_id"
+  add_index "human_stats", ["probeset_name"], :name => "index_human_stats_on_probeset_name"
+
+  create_table "human_tissues", :force => true do |t|
+    t.string  "slug"
+    t.string  "name"
+    t.string  "description"
+    t.integer "gene_chip_id"
+  end
+
+  add_index "human_tissues", ["gene_chip_id"], :name => "index_human_tissues_on_gene_chip_id"
+  add_index "human_tissues", ["slug"], :name => "index_human_tissues_on_slug", :unique => true
 
   create_table "probeset_datas", :force => true do |t|
     t.integer "assay_id"

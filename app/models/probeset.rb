@@ -4,7 +4,8 @@ class Probeset < ActiveRecord::Base
   belongs_to :gene_chip
   has_many :probeset_stats
   has_many :probeset_datas
-
+  has_many :human_datas
+  has_many :human_stats
 
   ## URL helpers
   # unigene_urls
@@ -221,7 +222,7 @@ class Probeset < ActiveRecord::Base
 
   def uscs_rna_url_white_adipose
     # could be multiple
-    return '<i>None</i>' if (refseq_transcript_id == '---' || refseq_transcript_id.nil? || entrez_gene == '-')
+    return '<i>None</i>' if (refseq_transcript_id == '---' ||refseq_transcript_id.nil? || entrez_gene == '-')
     template = "<a href='ACC'>RNAseq_NUM</a>"
     template2 = "http://genome.ucsc.edu/cgi-bin/hgTracks?hgS_doOtherUser=submit&hgS_otherUserName=hogenesch_lab&hgS_otherUserSessionName=bhtc_wfat_unique&singleSearch=refGeneAcc&position="
     links = []
@@ -235,7 +236,8 @@ class Probeset < ActiveRecord::Base
   end
 
   def refseq_protein_url
-    return '<i>None</i>' if (refseq_protein_id == '---' || refseq_protein_id.nil? || entrez_gene == '-')
+    #return '<i>None</i>' if (refseq_protein_id == '---' || refseq_protein_id.nil? || entrez_gene == '-')
+    return '<i>None</i>' if (refseq_protein_id.nil? || entrez_gene == '-')
     # could be multiple
     template = "<a href='http://www.ncbi.nlm.nih.gov/coreutils/dispatch.cgi?db=1&term=ACC'>ACC</a>"
     links = []
@@ -255,8 +257,12 @@ class Probeset < ActiveRecord::Base
     return '' unless gene_symbol
     return "<a href='http://www.ncbi.nlm.nih.gov/sites/entrez?Db=homologene&Cmd=DetailsSearch&Term=#{gene_symbol}%5BAll+Fields%5D'>HomoloGene</a>"
   end
-end
 
+  def ensembl_url
+    return '<i>None</i>' unless ensembl
+    return "<a href='http://www.ensembl.org/Homo_sapiens/Gene/Summary?g=#{ensembl}'>#{ensembl}"
+  end
+end
 
 # == Schema Information
 #
@@ -306,4 +312,3 @@ end
 #  transcript_assignments        :string(255)
 #  annotation_notes              :text
 #
-

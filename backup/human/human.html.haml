@@ -1,0 +1,50 @@
+.form.span-15.last.push-1{:style => "border-left: 2px double #E5ECF9; padding: 10px;" }
+  = render :partial => "formHuman"
+
+.footer.span-15.last.push-1
+  .count
+    -if @human_stats.total_entries != 0
+      Total hits #{@human_stat.total_entries}
+      = will_paginate @human_stats , :class => "apple_pagination", :params => params, :inner_window => 2
+    -else
+      Total hits #{@human_stats.total_entries}
+
+  -for @human_stat in @human_stats do
+    - @human_data = @human_stat.probeset_data
+    - @probeset = @human_stat.probeset
+    .results.span-20.last
+      .results.span-5.last
+        -if @human_data
+          =image_tag(@human_data.chart_url(175,100), :alt => "#{@human_data.probeset_name} Data")
+        -else
+          NO IMAGE
+      .results.span-15.last
+        %table
+          %tr
+            %td
+              <b>Experiment</b>
+            %td
+              <b>Probeset       </b>
+            %td
+              <b>Symbol </b>
+            %td
+              <b>RefSeq </b>
+            %td{:colspan=>2}
+              <b>Description    </b>
+          %tr
+            %td
+              ==#{Assay.find_by_id(@human_stat.assay_id).name}
+            %td
+              ==#{@probeset.probeset_name}
+            %td
+              ==#{@probeset.gene_symbol_url }
+            %td
+              ==#{@probeset.refseq_transcript_url}
+            %td{:colspan=>2}
+              ==#{@probeset.gene_title}
+
+.footer.span-15.last.push-1
+  .count
+  -if @human_stats.total_entries != 0
+    Total hits #{@human_stats.total_entries}
+    = will_paginate @human_stats, :class => "apple_pagination", :params => params

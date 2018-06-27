@@ -1,18 +1,18 @@
-class ProbesetStat < ActiveRecord::Base
+class HumanStat < ActiveRecord::Base
   cattr_reader :per_page
   @@per_page = 5
   cattr_reader :pval_filters
   @@pval_filters = []
   #["jtk", "JTK", "cosopt", "Lomb Scargle", "fisherg", "DeLichtenberg" ].each_slice(2) do |id,txt|
-  ["jtk", "JTK"].each_slice(2) do |id,txt|
-    @@pval_filters += [["#{txt} P-value","#{id}_p_value"],
+  ["CYCLOP", "cyclop"].each_slice(2) do |id,txt|
+    @@pval_filters += [["FDR","#{id}_FDR_value"],
+                        ["P-value","#{id}_p_value"]]
     #                   ["#{txt} Q-value","#{id}_q_value"] ]
-                       ["#{txt} Q-value","#{id}_q_value"] ]
   end
 
-  belongs_to :assay
+  belongs_to :human_tissue
   belongs_to :probeset
-  belongs_to :probeset_data
+  belongs_to :human_data
 
   # full text index using sphinx
   define_index do
@@ -31,10 +31,36 @@ class ProbesetStat < ActiveRecord::Base
         indexes probeset.#{m}, :as => :#{m}
         EOF
     end
-    # define filter attributes
-    has assay_id, cosopt_p_value, cosopt_q_value, cosopt_period_length,
-      cosopt_phase, fisherg_p_value, fisherg_q_value, fisherg_period_length,
-      jtk_p_value, jtk_q_value, jtk_period_length, jtk_lag, jtk_amp
+  #  # define filter attributes
+    has human_tissue_id, cyclop_p_value, cyclop_FDR_value, cyclop_phase, cyclop_rsqr, cyclop_rAMP
+  end
+
+  def round2digit(value)
+    if value < 0.01
+      sprintf("%20.1e", value)
+    else
+      sprintf(value.round(2).to_s)
+    end
+  end
+
+  def FDR
+    round2digit(cyclop_FDR_value)
+  end
+
+  def phase
+    round2digit(cyclop_phase)
+  end
+
+  def ramp
+    round2digit(cyclop_rAMP)
+  end
+
+  def rsqr
+    round2digit(cyclop_rsqr)
+  end
+
+  def pval
+    round2digit(cyclop_p_value)
   end
 end
 
@@ -45,20 +71,13 @@ end
 #
 #  id                    :integer(4)      not null, primary key
 #  assay_id              :integer(4)
+#  human_data_id         :integer(4)
 #  probeset_id           :integer(4)
-#  probeset_data_id      :integer(4)
-#  cosopt_p_value        :float
-#  cosopt_q_value        :float
-#  cosopt_period_length  :float
-#  cosopt_phase          :float
-#  fisherg_p_value       :float
-#  fisherg_q_value       :float
-#  fisherg_period_length :float
 #  assay_name            :string(255)
 #  probeset_name         :string(255)
-#  jtk_p_value           :float
-#  jtk_q_value           :float
-#  jtk_period_length     :float
-#  jtk_lag               :float
-#  jtk_amp               :float
+#  cyclop_p_value        :float
+#  cyclop_FDR_value      :float
+#  cyclop_phase          :float
+#  cyclop_rsqr           :float
+#  cyclop_rAMP           :float
 #

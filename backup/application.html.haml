@@ -24,20 +24,25 @@
         alert("Probabily cut-off value must between 0 and 1");
         return false;
         }
-      var x=document.forms["myForm"]["cyclop_rsqr"].value;
+      var x=document.forms["myHumanForm"]["filter_value"].value;
+      if (x==null || x=="" || x<=0 || x>1 || isNaN(Number(x)))
+        {
+        alert("Probabily cut-off value must between 0 and 1");
+        return false;
+        }
+      var x=document.forms["myHumanForm"]["cyclop_rsqr"].value;
       if (x==null || x=="" || x<0 || x>1 || isNaN(Number(x)))
         {
         alert("Minimum R square cut-off value must between 0 and 1");
         return false;
         }
-      var x=document.forms["myForm"]["cyclop_rAMP"].value;
+      var x=document.forms["myHumanForm"]["cyclop_rAMP"].value;
       if (x==null || x=="" || x<0 || x>10 || isNaN(Number(x)))
         {
-        alert("rAMP value must between 0 and 10");
+        alert("Minimum rAMP cut-off value must between 0 and 10");
         return false;
         }
       }
-
   %body.span-18.last.container{:style => "margin:auto;" }
     .header.span-18.last
       %h1= link_to( image_tag('CircaDB.png', :alt=> "CIRCA",:name=>"top"), root_path())
@@ -45,8 +50,12 @@
         %span
         %li=link_to("Human", root_path, :class => is_active?("human"))
         %li=link_to("Mouse", mouse_path, :class => is_active?("mouse"))
+        / %li=link_to("Tables", table_path, :class => is_active?("write"))
         %li=link_to("Help", help_path, :class => is_active?("help"))
         %li=link_to("About", about_path, :class => is_active?("about"))
+    /.news.span-18.last
+    /  %b NEWS (6/9/2014):
+    /  We added two new datasets: "Mouse Macrophages" and "Mouse Heart LD"
     .content.span-18.last
       = yield
     .footer.span-18.last
@@ -55,5 +64,7 @@
           %a(href="http://www.med.upenn.edu" ) Penn Medicine
           |
           %a(href="http://bioinf.itmat.upenn.edu/home.html") ITMAT Bioninformatics Facility
+    / .tail.span-9.last
+    /   = link_to( image_tag('DARPA_Logo.png', :alt=> "CIRCA"), "http://www.darpa.mil/")
     .tail.span-18.last
       = link_to( image_tag('NHLBI.png', :alt=> "CIRCA"), "http://www.nhlbi.nih.gov/")

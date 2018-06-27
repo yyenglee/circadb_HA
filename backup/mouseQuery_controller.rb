@@ -6,91 +6,7 @@ class QueryController < ApplicationController
     send_data @k, :filename => 'query.csv', :type => 'text/csv'
   end
 
-  def human
-    # condition hash
-    cnd = {}
-    # page to fetch
-    current_page = params[:page].to_i > 0 ? params[:page].to_i : 1
-
-    # q_value filter
-    params[:filter] ||= "cyclop_FDR_value"
-    if HumanStat.pval_filters.flatten.include?(params[:filter])
-      order = "#{params[:filter]} ASC"
-    else
-      order = "cyclop_p_value ASC"
-    end
-    fv = params[:filter_value].to_f > 0 ? params[:filter_value].to_f : 0.05
-    puts fv
-    cnd[params[:filter].to_sym] = (0.0)..(fv)
-
-    # tissue
-    cnd[:human_tissue_id] = params[:human_tissues] if params[:human_tissues]
-    if params[:query_string].to_s.strip.empty?
-      params[:query_string] = nil
-    end
-
-    # rAMP
-    ra = !params[:cyclop_rAMP].nil? && params[:cyclop_rAMP].to_f < 10 ? params[:cyclop_rAMP].to_f : 0.1
-    cnd["cyclop_rAMP"] = (ra)..(10.0)
-
-    # rSquare
-    rs = !params[:cyclop_rsqr].nil? && params[:cyclop_rsqr].to_f < 1 ? params[:cyclop_rsqr].to_f : 0.1
-    cnd["cyclop_rsqr"] = (rs)..(1.0)
-
-    # output mode
-    params[:output_mode] ||= 'normal'
-    @output_mode = params[:output_mode].to_sym
-
-    # query match mode
-    params[:match_mode] ||= 'gene_symbol'
-
-    @match_mode = params[:match_mode].to_sym
-
-    if params[:match_mode] == 'gene_symbol' && params[:query_string]
-      @new_query = ""
-      if params[:query_string]
-        @match_mode = "extended".to_sym
-        params[:query_string].split(" ").each do |word|
-          @new_query += "@gene_symbol #{word} | "
-        end
-        params[:query_string] = @new_query[0..-3]
-      end
-    end
-
-    if params[:query_string]
-      @human_stats = HumanStat.search(params[:query_string],
-        :page => current_page, :per_page => @per_page, :with => cnd,
-        :order => order, :match_mode => @match_mode,
-        :include => [:human_data, :probeset, :human_stats])
-    else
-      @human_stats = HumanStat.search(:page => current_page,
-        :per_page => @per_page, :with => cnd,
-        :order => order,
-        :include => [:human_data, :probeset, :human_stats])
-    end
-
-    if params[:query_string] && params[:match_mode] == 'gene_symbol'
-      fields = params[:query_string].split("@gene_symbol")
-      params[:query_string] = fields.join("\n").delete(" | ")
-    end
-
-    # if you want to log messages, look at the Rails logger functionality
-    # puts "@probeset_stats = #{@probeset_stats.length}"
-    respond_to do |format|
-
-      format.html
-      format.bgps do
-        @unigene_id = params[:query_string]
-        render :action => "human", :layout => "biogps"
-      end
-      format.js { render  :json => @human_stats.to_json }
-      format.xml { render  :xml => @human_stats.to_xml }
-    end
-
-  #  send_data @k, :filename => 'query.csv', :type => 'text/csv' if @k
-  end
-
-  def mouse
+  def index
     # condition hash
     cnd = {}
     # page to fetch
@@ -223,7 +139,7 @@ class QueryController < ApplicationController
       format.html
       format.bgps do
         @unigene_id = params[:query_string]
-        render :action => "mouse", :layout => "biogps"
+        render :action => "index", :layout => "biogps"
       end
       format.js { render  :json => @probeset_stats.to_json }
       format.xml { render  :xml => @probeset_stats.to_xml }

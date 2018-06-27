@@ -14,13 +14,25 @@
         %a(href="#probability") - Probability
     %tr
       %th
+        %a(href="#phase_range") - Phase range
+    %tr
+      %th
         %a(href="#results") Results
     %tr
       %th
-        %a(href="#human") - Human
+        %a(href="#plot") - Plots
     %tr
       %th
-        %a(href="#mouse") - Mouse
+        %a(href="#p-value") - p-Value
+    %tr
+      %th
+        %a(href="#q-value") - q-Value
+    %tr
+      %th
+        %a(href="#period") - Period
+    %tr
+      %th
+        %a(href="#phase") - Phase
     %tr
       %th
         %a(href="#faq") FAQ
@@ -139,52 +151,14 @@
     and
     %a(href="#p-value") q-values
     produced by the different algorithms. The given value is used as the upper cutoff.
+  %h3
+    %a(name="phase_range"){:style => "color:#111;"} Phase range
+  %p
+    The here specified range can be used to filter for genes that share the same
+    %a(href="#range") phase.
+    Only the phases computed by JTK are considered during this filter step.
   %h2
     %a(name="results"){:style => "color:#111;"} Understanding the results
-
-  %h2
-    %a(name="human"){:style => "color:#111;"} Human
-  %p
-    Cosinor regression (modified, as reported in Anafi et al., PNAS 2017) was
-    used to test if individual genes are rhythmic or not. We only looked for
-    rhythms with a period of 24 hours.
-  %h3
-    %a(name="plot_human"){:style => "color:#111;"} Plots
-  %p
-    Each point represents a single human donor. The x-axis is the CYCLOPS-estimated
-    sample phase, in radians (from 0 to 2𝝿). The y-axis is the expression level (TPM)
-    from RNAseq. Phase has been adjusted so that time 0 represents BMAL1 peak phase.
-  =image_tag("plot_human.png", :alt=> "PLOT_HUMAN", :width => "550", :height => "200")
-  %h3
-    %a(name="p-value_human"){:style => "color:#111;"} P-value
-  %p
-    The estimated probability of rejecting the null hypothesis – that the dataset is not rhythmic.
-  %h3
-    %a(name="FDR_human"){:style => "color:#111;"} FDR
-  %p
-    FDR is the ratio of false-positives to total genes discovered at a particular threshold.
-    This is an adjustment to P-value in order to control the number of false discoveries when
-    simultaneously testing multiple hypotheses (Benjamini & Hochberg, J. R. Stat. Soc. 1995).
-  %h3
-    %a(name="rSqr"){:style => "color:#111;"} R<sup>2</sup> (Rsq)
-  %p
-    Coefficient of determination from cosinor regression. This is a measure of how well
-    the data fit to a 24 hour sine wave. A value of 1 is perfect – all of the points line up on the curve.
-  %h3
-    %a(name="rAMP"){:style => "color:#111;"} rAMP (relative amplitude)
-  %p
-    A measure of the magnitude of oscillation (i.e., effect size).
-  %h3
-    %a(name="period"){:style => "color:#111;"} Period
-  %p
-    How often the cycle repeats. We tested only for patterns that repeat every 24 hours.
-  %h3
-    %a(name="phase"){:style => "color:#111;"} Phase
-  %p
-    Identifies the time of peak expression.
-
-  %h2
-    %a(name="mouse"){:style => "color:#111;"} Mouse
   %p
     There are three different algorithms to statistically test if a dataset
     is cyclic or not. More information about these algorithms can be found
@@ -217,8 +191,6 @@
     %a(name="phase"){:style => "color:#111;"} Phase
   %p
     The phase reflects the timing in the individual tissues. The DeLichtenberg algorithm does not provide this value in its output.
-
-
   %h2
     %a(name="faq"){:style => "color:#111;"} Frequently asked questions
   %table
