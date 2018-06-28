@@ -17,6 +17,7 @@ namespace :seedGTExExample do
 
   task :datas => :environment do
     ## OK start the imports
+
     puts "=== GTEx Raw Data insert starting ==="
     fields = %w{ human_tissue_id human_tissue_name probeset_id probeset_name time_points data_points}
 
@@ -37,7 +38,7 @@ namespace :seedGTExExample do
       puts "=== Raw Data #{etype} insert starting ==="
 
       #File.open("#{RAILS_ROOT}/seed_data/hughes_#{etype}_data","r" ).each do |line|
-      File.open("/home/My/linux/HogeneschLab/redo/process_cyclop_data/example_input_2digit.txt","r").each do |line|
+      File.open("#{RAILS_ROOT}/raw_data/example_input_2digit.txt","r").each do |line|
         count += 1
         if count > 1
           line = line.gsub('"','')
@@ -102,7 +103,7 @@ namespace :seedGTExExample do
       end
 
       #CSV.foreach("#{RAILS_ROOT}/seed_data/hughes_#{etype}_stats") do |row|
-      CSV.foreach("/home/My/linux/HogeneschLab/redo/process_cyclop_data/example_input_cyclopStat.csv") do |row|
+      CSV.foreach("#{RAILS_ROOT}/raw_data/example_input_cyclopStat.csv") do |row|
         count += 1
         if count > 1 && row[3] != "NA"  #skip first line for header, skip if no hgnc_symbol available
           aslug, psname = 0,row[0]
