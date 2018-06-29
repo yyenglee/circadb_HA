@@ -62,6 +62,7 @@ class HumanStat < ActiveRecord::Base
   def pval
     round2digit(cyclop_p_value)
   end
+
 end
 
 

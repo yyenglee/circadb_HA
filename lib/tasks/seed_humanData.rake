@@ -10,7 +10,7 @@ namespace :seedGTExExample do
 
     a = GeneChip.find(:first, :conditions => ["slug like ?","HuGene1_0"])
     #a = GeneChip.find(:first, :conditions => ["slug like ?","Human_GTEx"])
-    g = HumanTissue.new(:slug => "Artery_Tibial", :name => "Artery Tibial", :description => "ArteryTibial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Artery_Tibial", :name => "Artery Tibial (GTEx v7)", :description => "ArteryTibial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
     puts "=== Test human tissue data inserted ==="
   end
