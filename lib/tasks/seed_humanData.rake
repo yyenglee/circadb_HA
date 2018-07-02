@@ -10,7 +10,31 @@ namespace :seedGTExExample do
 
     a = GeneChip.find(:first, :conditions => ["slug like ?","HuGene1_0"])
     #a = GeneChip.find(:first, :conditions => ["slug like ?","Human_GTEx"])
-    g = HumanTissue.new(:slug => "Artery_Tibial", :name => "Artery Tibial (GTEx v7)", :description => "ArteryTibial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Aorta", :name => "Aorta(GTEx.V7)", :description => "Aorta_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g.save
+    g = HumanTissue.new(:slug => "Artery_Coronary", :name => "Artery Coronary(GTEx.V7)", :description => "ArteryCoronary_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g.save
+    g = HumanTissue.new(:slug => "Artery_Tibial", :name => "Artery Tibial(GTEx.V7)", :description => "ArteryTibial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g.save
+    g = HumanTissue.new(:slug => "Colon", :name => "Colon(GTEx.V7)", :description => "Colon_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g.save
+    g = HumanTissue.new(:slug => "Esophagus", :name => "Esophagus(GTEx.V7)", :description => "Esophagus_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g.save
+    g = HumanTissue.new(:slug => "Heart_Atrial", :name => "Heart Atrial(GTEx.V7)", :description => "HeartAtrial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g.save
+    g = HumanTissue.new(:slug => "Liver", :name => "Liver(GTEx.V7)", :description => "Liver_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g.save
+    g = HumanTissue.new(:slug => "Lung", :name => "Lung(GTEx.V7)", :description => "Lung_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g.save
+    g = HumanTissue.new(:slug => "Nerve_Tibial", :name => "Nerve Tibial(GTEx.V7)", :description => "NerveTibial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g.save
+    g = HumanTissue.new(:slug => "Pituitary", :name => "Pituitary(GTEx.V7)", :description => "Pituitary_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g.save
+    g = HumanTissue.new(:slug => "Thyroid", :name => "Thyroid(GTEx.V7)", :description => "Thyroid_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g.save
+    g = HumanTissue.new(:slug => "Fat_SQ", :name => "Fat SQ(GTEx.V7)", :description => "FatSQ_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g.save
+    g = HumanTissue.new(:slug => "Fat_Visceral", :name => "Fat Visceral(GTEx.V7)", :description => "FatVisceral_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
     puts "=== Test human tissue data inserted ==="
   end
@@ -21,7 +45,7 @@ namespace :seedGTExExample do
     puts "=== GTEx Raw Data insert starting ==="
     fields = %w{ human_tissue_id human_tissue_name probeset_id probeset_name time_points data_points}
 
-    # Insert example data to table
+    # Match gene symbol and id from annotation file
     g = GeneChip.find(:first, :conditions => ["slug like ?","HuGene1_0"])
     #g = GeneChip.find(:first, :conditions => ["slug like ?","Human_GTEx"])
     probesets = {}
@@ -31,51 +55,50 @@ namespace :seedGTExExample do
       end
     end
 
-    %w{ Artery_Tibial }.each do |etype|
-      count = 0
-      buffer = []
-      a = HumanTissue.find(:first, :conditions => ["slug = ?", etype])
-      puts "=== Raw Data #{etype} insert starting ==="
-
-      #File.open("#{RAILS_ROOT}/seed_data/hughes_#{etype}_data","r" ).each do |line|
-      File.open("#{RAILS_ROOT}/raw_data/example_input_2digit.txt","r").each do |line|
-        count += 1
-        if count > 1
-          line = line.gsub('"','')
-          line = line.split(" ")
-          #time_points = line[2].split(",").map {|element| element}
-          #data_points = line[3].split(",").map {|element| element}
-
-          time_points = line[2].split(",")
-          data_points = line[3].split(",")
-
-          info = []
-          time_points.each_with_index do |time, index|
-            info.push([time,data_points[index]])
-          end
-
-          info = info.sort_by{|time,data| time}
-          time_points = info.map{|time,data| time.to_f}
-          data_points = info.map{|time,data| data.to_f}
-
-          gene_symbol = line[1].gsub('"','')
-          psid = probesets[gene_symbol]
-          #if !psid.blank?
-          #  buffer << [a.id(), a.slug, psid, gene_symbol, time_points.to_json, data_points.to_json]
-          #end
-          buffer << [a.id(), a.slug, psid, gene_symbol, time_points.to_json, data_points.to_json]
-        end
-
-        if count % 1000 == 0
-          HumanData.import(fields,buffer)
-          puts count
-          buffer = []
-        end
-      end
-      HumanData.import(fields,buffer)
-      puts "=== Raw Data #{etype} end (count= #{count}) ==="
+    # Match tissue type and id
+    sampleID = {}
+    HumanTissue.all.each do |etype|
+      sampleID[etype.slug] = etype.id
     end
-    puts "=== Raw Data insert ended ==="
+
+    puts "=== Raw Data insert starting ==="
+    count = 0
+    buffer = []
+    File.open("#{RAILS_ROOT}/raw_data/PhasevsTMPInfo.txt","r").each do |line|
+      count += 1
+      if count > 1
+        line = line.gsub('"','')
+        line = line.split(" ")
+
+        tissue = line[2]
+        time_points = line[3].split(",")
+        data_points = line[4].split(",")
+
+        info = []
+        time_points.each_with_index do |time, index|
+          info.push([time,data_points[index]])
+        end
+
+        info = info.sort_by{|time,data| time}
+        time_points = info.map{|time,data| time.to_f}
+        data_points = info.map{|time,data| data.to_f}
+
+        gene_symbol = line[1].gsub('"','')
+        psid = probesets[gene_symbol]
+        #if !psid.blank?
+        #  buffer << [a.id(), a.slug, psid, gene_symbol, time_points.to_json, data_points.to_json]
+        #end
+        buffer << [sampleID[tissue], tissue, psid, gene_symbol, time_points.to_json, data_points.to_json]
+      end
+
+      if count % 1000 == 0
+        HumanData.import(fields,buffer)
+        puts count
+        buffer = []
+      end
+    end
+    HumanData.import(fields,buffer)
+    puts "=== Raw Data insert ended (count= #{count}) ==="
   end
 
   task :stats => :environment do
@@ -83,7 +106,6 @@ namespace :seedGTExExample do
     fields = %w{ human_tissue_id human_tissue_name human_data_id probeset_id probeset_name cyclop_phase cyclop_p_value cyclop_FDR_value cyclop_rsqr cyclop_rAMP cyclop_fitmean cyclop_amplitude}
 
     g = GeneChip.find(:first, :conditions => ["slug like ?","HuGene1_0"])
-    #g = GeneChip.find(:first, :conditions => ["slug like ?","Human_GTEx"])
     probesets = {}
     g.probesets.each do |p|
       if !p.gene_symbol.nil?
@@ -91,42 +113,49 @@ namespace :seedGTExExample do
       end
     end
 
-    %w{ Artery_Tibial }.each do |etype|
-      count = 0
-      buffer = []
-      a = HumanTissue.find(:first, :conditions => ["slug = ?", etype])
-      humandata = {}
-      a.human_datas.each do |i|
-        if !i.probeset_name.nil?
-          humandata[i.probeset_name] = i.id
-        end
-      end
-
-      #CSV.foreach("#{RAILS_ROOT}/seed_data/hughes_#{etype}_stats") do |row|
-      CSV.foreach("#{RAILS_ROOT}/raw_data/example_input_cyclopStat.csv") do |row|
-        count += 1
-        if count > 1 && row[3] != "NA"  #skip first line for header, skip if no hgnc_symbol available
-          aslug, psname = 0,row[0]
-          psid = probesets[row[0]]
-          hdid = humandata[row[0]]
-
-          #buffer << [a.id, a.slug,psid, psid, psname] + row[1..-1].to_a
-          #if !psid.blank?
-          #  buffer << [a.id(), a.slug, hdid, psid, row[0]] + row[5...12].to_a
-          #end
-          buffer << [a.id(), a.slug, hdid, psid, row[0]] + row[5...12].to_a
-          if count % 1000 == 0
-            HumanStat.import(fields,buffer)
-            buffer = []
-            puts count
-          end
-        end
-      end
-      HumanStat.import(fields,buffer)
-      puts "=== Stat Data #{etype} end (count = #{count}) ==="
+    humandata = Hash.new()
+    sampleID = {}
+    HumanTissue.all.each do |etype|
+      sampleID[etype.slug] = etype.id
+      humandata[etype.slug] = Hash.new()
     end
 
-    puts "=== Stat Data END ==="
+    HumanData.all.each do |dat|
+      #puts dat.human_tissue_name, dat.probeset_name
+      if !dat.probeset_name.nil?
+          humandata[dat.human_tissue_name][dat.probeset_name] = dat.id
+      end
+    end
+
+    puts "check array"
+    count = 0
+    buffer = []
+    CSV.foreach("#{RAILS_ROOT}/raw_data/GTExv7CircAtlas_CoReg_withEntrezIDs.csv") do |row|
+      count += 1
+      if count > 1 && row[3] != "NA"  #skip first line for header, skip if no hgnc_symbol available
+        psname = row[0]
+        tissue = row[4].gsub(" ","_")
+        psid = probesets[row[0]]
+        hdid = humandata[tissue][row[0]]
+
+        #buffer << [a.id, a.slug,psid, psid, psname] + row[1..-1].to_a
+        #if !psid.blank?
+        #  buffer << [a.id(), a.slug, hdid, psid, row[0]] + row[5...12].to_a
+        #end
+        fields = %w{ human_tissue_id human_tissue_name human_data_id probeset_id probeset_name cyclop_phase cyclop_p_value cyclop_FDR_value cyclop_rsqr cyclop_rAMP cyclop_fitmean cyclop_amplitude}
+
+        buffer << [sampleID[tissue], tissue, hdid, psid, row[0]] + row[5...12].to_a
+        if count % 1000 == 0
+          HumanStat.import(fields,buffer)
+          buffer = []
+          puts count
+        end
+      end
+    end
+
+    HumanStat.import(fields,buffer)
+    puts "=== Stat Data #{etype} end (count = #{count}) END ==="
+
   end
 
   desc "Backfills in references for FKs to probeset_stats to probeset_datas."
