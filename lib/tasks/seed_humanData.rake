@@ -20,6 +20,10 @@ namespace :seedGTExExample do
     g.save
     g = HumanTissue.new(:slug => "Esophagus", :name => "Esophagus(GTEx.V7)", :description => "Esophagus_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
+    g = HumanTissue.new(:slug => "Fat_SQ", :name => "Fat SQ(GTEx.V7)", :description => "FatSQ_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g.save
+    g = HumanTissue.new(:slug => "Fat_Visceral", :name => "Fat Visceral(GTEx.V7)", :description => "FatVisceral_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g.save
     g = HumanTissue.new(:slug => "Heart_Atrial", :name => "Heart Atrial(GTEx.V7)", :description => "HeartAtrial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
     g = HumanTissue.new(:slug => "Liver", :name => "Liver(GTEx.V7)", :description => "Liver_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
@@ -32,10 +36,7 @@ namespace :seedGTExExample do
     g.save
     g = HumanTissue.new(:slug => "Thyroid", :name => "Thyroid(GTEx.V7)", :description => "Thyroid_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
-    g = HumanTissue.new(:slug => "Fat_SQ", :name => "Fat SQ(GTEx.V7)", :description => "FatSQ_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
-    g.save
-    g = HumanTissue.new(:slug => "Fat_Visceral", :name => "Fat Visceral(GTEx.V7)", :description => "FatVisceral_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
-    g.save
+
     puts "=== Test human tissue data inserted ==="
   end
 
@@ -113,38 +114,33 @@ namespace :seedGTExExample do
       end
     end
 
-    humandata = Hash.new()
-    sampleID = {}
-    HumanTissue.all.each do |etype|
-      sampleID[etype.slug] = etype.id
-      humandata[etype.slug] = Hash.new()
-    end
-
-    HumanData.all.each do |dat|
-      #puts dat.human_tissue_name, dat.probeset_name
-      if !dat.probeset_name.nil?
-          humandata[dat.human_tissue_name][dat.probeset_name] = dat.id
-      end
-    end
-
-    puts "check array"
     count = 0
     buffer = []
+    humandata = {}
+    cur_tissue = ""
+    tissueID = nil
+
     CSV.foreach("#{RAILS_ROOT}/raw_data/GTExv7CircAtlas_CoReg_withEntrezIDs.csv") do |row|
       count += 1
       if count > 1 && row[3] != "NA"  #skip first line for header, skip if no hgnc_symbol available
         psname = row[0]
         tissue = row[4].gsub(" ","_")
-        psid = probesets[row[0]]
-        hdid = humandata[tissue][row[0]]
 
-        #buffer << [a.id, a.slug,psid, psid, psname] + row[1..-1].to_a
-        #if !psid.blank?
-        #  buffer << [a.id(), a.slug, hdid, psid, row[0]] + row[5...12].to_a
-        #end
-        fields = %w{ human_tissue_id human_tissue_name human_data_id probeset_id probeset_name cyclop_phase cyclop_p_value cyclop_FDR_value cyclop_rsqr cyclop_rAMP cyclop_fitmean cyclop_amplitude}
+        if cur_tissue != tissue   # reset humandata info if tissue name changed
+          cur_tissue = tissue
+          t = HumanTissue.find(:first, :conditions => ["slug = ?", tissue])
+          tissueID = t.id
+          humandata = {}
+          t.human_datas.each do |d|
+            if !d.probeset_name.nil?
+              humandata[d.probeset_name] = d.id
+            end
+          end
+        end
 
-        buffer << [sampleID[tissue], tissue, hdid, psid, row[0]] + row[5...12].to_a
+        psid = probesets[psname]
+        hdid = humandata[psname]
+        buffer << [tissueID, tissue, hdid, psid, psname] + row[5...12].to_a
         if count % 1000 == 0
           HumanStat.import(fields,buffer)
           buffer = []
@@ -154,7 +150,7 @@ namespace :seedGTExExample do
     end
 
     HumanStat.import(fields,buffer)
-    puts "=== Stat Data #{etype} end (count = #{count}) END ==="
+    puts "=== Stat Data end (count = #{count}) END ==="
 
   end
 
@@ -187,6 +183,18 @@ namespace :seedGTExExample do
     c.execute "delete from human_stats"
   end
 
+  task :delete_from_humanstats => :environment do
+    c = ActiveRecord::Base.connection
+    c.execute "delete from human_stats"
+  end
+
+  task :delete_from_human => :environment do
+    c = ActiveRecord::Base.connection
+    c.execute "delete from human_tissues"
+    c.execute "delete from human_datas"
+    c.execute "delete from human_stats"
+  end
+
   desc "Warning: Deletes all content"
   task :delete_from_all => :environment do
     c = ActiveRecord::Base.connection
@@ -208,8 +216,11 @@ namespace :seedGTExExample do
   #task :fill => [:delete_from_all, :genechips,
   #  :mouse430_probesets, :u74av1_probesets, :gnf1m_probesets, :hugene_probesets,
   #  :mogene_probesets, :assays, :datas, :human_tissues, :stats, :refbackfill, :build_sphinx]
-  task :fill => [:assays, :datas, :stats]
+  task :fill => [:delete_from_human, :assays, :datas, :stats]
   #task :fill => [:stats]
+
+  desc "Reset human stats"
+  task :reset_humanStat => [:delete_from_humanstats, :stats]
 
   desc "Refill Probesets"
   task :refill_probesets => [:delete_from_probesets, :mouse430_probesets,
