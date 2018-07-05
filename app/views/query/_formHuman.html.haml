@@ -47,7 +47,6 @@
     - @output_mode = params[:output_mode]
     = radio_button_tag(:output_mode, "normal", (@output_mode == "normal" ? true : false))
     = label_tag(:output_mode_any, "normal")
-    /= radio_button_tag(:output_mode, "any", (@output_mode == "any" ? true : false ))
     = radio_button_tag(:output_mode, "slim", (@output_mode == "slim" ? true : false))
     = label_tag(:output_mode_any, "slim")
 
@@ -57,5 +56,7 @@
       = link_to(image_tag('questionmark_orange3.png', :alt=> "Experiment help page"), select_more_than_one_path())
       %br
       %span.help (If nothing is selected, CIRCA will search all experiments.)
-      = select_tag(:human_tissues, options_for_select(HumanTissue.all.collect {|e| [e.name ,  e.id.to_s] }, params[:human_tissues]), {:multiple => true,  :style => "height: 200px;width: 300px"})
-    .span-15.hov= submit_tag "Search"
+      = select_tag(:human_tissues, options_for_select(HumanTissue.all.collect {|e| [e.name ,  e.id.to_s] }, params[:human_tissues]), {:multiple => true,  :style => "height: 170px; width: 350px"})
+      = submit_tag "Search"
+      = submit_tag(:Download)
+      %span.help (Only top 1000 hits are available for download)

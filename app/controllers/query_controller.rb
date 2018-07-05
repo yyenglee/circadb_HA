@@ -64,9 +64,36 @@ class QueryController < ApplicationController
         :include => [:human_data, :probeset, :human_stats])
     else
       @human_stats = HumanStat.search(:page => current_page,
-        :per_page => @per_page, :with => cnd,
-        :order => order,
+        :per_page => @per_page, :with => cnd, :order => order,
         :include => [:human_data, :probeset, :human_stats])
+    end
+
+    if params[:commit] == "Download"
+      maxCount = 1000
+      @human_stats.total_entries < maxCount ? count = @human_stats.total_entries : count = maxCount
+      if params[:query_string]
+        human_stats = HumanStat.search(params[:query_string],
+          :page => current_page, :per_page => maxCount, :with => cnd,
+          :order => order, :match_mode => @match_mode,
+          :include => [:human_stats])
+      else
+        human_stats = HumanStat.search(:page => current_page,
+          :per_page => maxCount, :with => cnd, :order => order,
+          :include => [:human_stats])
+      end
+
+      @k = "Gene_Symbol,pvalue,FDR,Rsqr,rAMP,Phase,Tissue\n"
+      for i in 0...count
+        human_stat = human_stats[i]
+        gene_symbol = human_stat.probeset_name
+        pvalue = human_stat.cyclop_p_value
+        fdr = human_stat.cyclop_FDR_value
+        rsqr = human_stat.cyclop_rsqr
+        ramp = human_stat.cyclop_rAMP
+        phase = human_stat.cyclop_phase
+        tissue = human_stat.human_tissue_name
+        @k += "#{gene_symbol},#{pvalue},#{fdr},#{rsqr},#{ramp},#{phase},#{tissue}\n"
+      end
     end
 
     if params[:query_string] && params[:match_mode] == 'gene_symbol'
@@ -83,11 +110,11 @@ class QueryController < ApplicationController
         @unigene_id = params[:query_string]
         render :action => "human", :layout => "biogps"
       end
-      format.js { render  :json => @human_stats.to_json }
-      format.xml { render  :xml => @human_stats.to_xml }
+      format.js { render :json => @human_stats.to_json }
+      format.xml { render :xml => @human_stats.to_xml }
     end
 
-  #  send_data @k, :filename => 'query.csv', :type => 'text/csv' if @k
+    send_data @k, :filename => 'CircaDB_HA_query.csv', :type => 'text/csv' if @k
   end
 
   def mouse
@@ -202,7 +229,6 @@ class QueryController < ApplicationController
         @k += "#{id},#{gene_symbol},#{time_points},#{data_points},#{jtkp},#{jtkq},#{jtkperiod},#{jtkphase},#{tissue}\n"
       end
 
-
       #File.delete(filename)
     else
       @k = nil
@@ -214,7 +240,6 @@ class QueryController < ApplicationController
     end
 
     #download(k) if k
-
 
     # if you want to log messages, look at the Rails logger functionality
     # puts "@probeset_stats = #{@probeset_stats.length}"

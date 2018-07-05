@@ -10,31 +10,31 @@ namespace :seedGTExExample do
 
     a = GeneChip.find(:first, :conditions => ["slug like ?","HuGene1_0"])
     #a = GeneChip.find(:first, :conditions => ["slug like ?","Human_GTEx"])
-    g = HumanTissue.new(:slug => "Aorta", :name => "Aorta(GTEx.V7)", :description => "Aorta_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Aorta", :name => "Aorta_GTExV7", :description => "Aorta_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
-    g = HumanTissue.new(:slug => "Artery_Coronary", :name => "Artery Coronary(GTEx.V7)", :description => "ArteryCoronary_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Artery_Coronary", :name => "Artery Coronary_GTExV7", :description => "ArteryCoronary_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
-    g = HumanTissue.new(:slug => "Artery_Tibial", :name => "Artery Tibial(GTEx.V7)", :description => "ArteryTibial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Artery_Tibial", :name => "Artery Tibial_GTExV7", :description => "ArteryTibial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
-    g = HumanTissue.new(:slug => "Colon", :name => "Colon(GTEx.V7)", :description => "Colon_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Colon", :name => "Colon_GTExV7", :description => "Colon_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
-    g = HumanTissue.new(:slug => "Esophagus", :name => "Esophagus(GTEx.V7)", :description => "Esophagus_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Esophagus", :name => "Esophagus_GTExV7", :description => "Esophagus_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
-    g = HumanTissue.new(:slug => "Fat_SQ", :name => "Fat SQ(GTEx.V7)", :description => "FatSQ_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Fat_SQ", :name => "Fat SQ_GTExV7", :description => "FatSQ_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
-    g = HumanTissue.new(:slug => "Fat_Visceral", :name => "Fat Visceral(GTEx.V7)", :description => "FatVisceral_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Fat_Visceral", :name => "Fat Visceral_GTExV7", :description => "FatVisceral_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
-    g = HumanTissue.new(:slug => "Heart_Atrial", :name => "Heart Atrial(GTEx.V7)", :description => "HeartAtrial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Heart_Atrial", :name => "Heart Atrial_GTExV7", :description => "HeartAtrial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
-    g = HumanTissue.new(:slug => "Liver", :name => "Liver(GTEx.V7)", :description => "Liver_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Liver", :name => "Liver_GTExV7", :description => "Liver_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
-    g = HumanTissue.new(:slug => "Lung", :name => "Lung(GTEx.V7)", :description => "Lung_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Lung", :name => "Lung_GTExV7", :description => "Lung_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
-    g = HumanTissue.new(:slug => "Nerve_Tibial", :name => "Nerve Tibial(GTEx.V7)", :description => "NerveTibial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Nerve_Tibial", :name => "Nerve Tibial_GTExV7", :description => "NerveTibial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
-    g = HumanTissue.new(:slug => "Pituitary", :name => "Pituitary(GTEx.V7)", :description => "Pituitary_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Pituitary", :name => "Pituitary_GTExV7", :description => "Pituitary_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
-    g = HumanTissue.new(:slug => "Thyroid", :name => "Thyroid(GTEx.V7)", :description => "Thyroid_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "Thyroid", :name => "Thyroid_GTExV7", :description => "Thyroid_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
     g.save
 
     puts "=== Test human tissue data inserted ==="

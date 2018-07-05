@@ -10,4 +10,5 @@ ActionController::Routing::Routes.draw do |map|
   map.select_more_than_one "/help", :anchor => 'faq', :controller => "query", :action => "help", :format => 'html'
   map.mouse_help "/help", :anchor => 'mouse', :controller => "query", :action => "help", :format => 'html'
   map.human_help "/help", :anchor => 'human', :controller => "query", :action => "help", :format => 'html'
+  map.download "/download", :anchor => 'human', :controller => "query", :action => "download", :format => 'html'
 end

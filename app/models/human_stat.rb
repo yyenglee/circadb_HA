@@ -74,7 +74,7 @@ end
 #  assay_id              :integer(4)
 #  human_data_id         :integer(4)
 #  probeset_id           :integer(4)
-#  assay_name            :string(255)
+#  human_tissue_name     :string(255)
 #  probeset_name         :string(255)
 #  cyclop_p_value        :float
 #  cyclop_FDR_value      :float
