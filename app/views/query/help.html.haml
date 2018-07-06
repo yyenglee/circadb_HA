@@ -145,16 +145,27 @@
   %h2
     %a(name="human"){:style => "color:#111;"} Human
   %p
-    Cosinor regression (modified, as reported in Anafi et al., PNAS 2017) was
-    used to test if individual genes are rhythmic or not. We only looked for
-    rhythms with a period of 24 hours.
+    We have applied CYCLOPS (Anafi et al., PNAS 2017), an algorithm designed to reconstruct sample order
+    in the absence of time-of-day information, to the public GTEx collection (GTEx Consortium, Nat. Genet. 2013)
+    of 632 human donors contributing 4,292 RNA-seq samples from 13 distinct human tissue types.
+    Additional sample information can be found at GTEx’s documentation page:
+    %a(href="https://gtexportal.org/home/documentationPage") https://gtexportal.org/home/documentationPage.
+
+  %p
+    For each tissue that was CYCLOPS ordered, cosinor regression (modified, Anafi et al., PNAS 2017)
+    was used to test if individual genes are rhythmic or not. We only looked for rhythms with a period
+    of 24 hours. Gene-level expression data was filtered to exclude any gene with a read count of zero
+    (TPM = 0) in any sample. Following this, only the top 15,000 expressed genes by median TPM were
+    considered for each tissue.
+
   %h3
     %a(name="plot_human"){:style => "color:#111;"} Plots
   %p
     Each point represents a single human donor. The x-axis is the CYCLOPS-estimated
-    sample phase, in radians (from 0 to 2𝝿). The y-axis is the expression level (TPM)
-    from RNAseq. Phase has been adjusted so that time 0 represents BMAL1 peak phase.
-  =image_tag("plot_human.png", :alt=> "PLOT_HUMAN", :width => "550", :height => "200")
+    sample phase in radians (from 0 to 2𝝿). The y-axis is the expression level (TPM)
+    from RNAseq. Phase has been adjusted so that time 𝝿 represents E-box phase (i.e. time
+    of peak expression of E-box target genes NR1D1, NR1D2, and PER3).
+    =image_tag("plot_human.png", :alt=> "PLOT_HUMAN", :width => "550", :height => "200")
   %h3
     %a(name="p-value_human"){:style => "color:#111;"} P-value
   %p
