@@ -1,5 +1,5 @@
 desc "Seed database using raw data"
-namespace :seedGTEx do
+namespace :seedPnGSkin do
   require "ar-extensions"
   require "csv"
 
@@ -7,34 +7,9 @@ namespace :seedGTEx do
   task :assays => :environment do
     c = ActiveRecord::Base.connection
     #c.execute "delete from human_tissues"
-
     a = GeneChip.find(:first, :conditions => ["slug like ?","HuGene1_0"])
     #a = GeneChip.find(:first, :conditions => ["slug like ?","Human_GTEx"])
-    g = HumanTissue.new(:slug => "Aorta", :name => "Aorta_GTExV7", :description => "Aorta_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
-    g.save
-    g = HumanTissue.new(:slug => "Artery_Coronary", :name => "Artery Coronary_GTExV7", :description => "ArteryCoronary_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
-    g.save
-    g = HumanTissue.new(:slug => "Artery_Tibial", :name => "Artery Tibial_GTExV7", :description => "ArteryTibial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
-    g.save
-    g = HumanTissue.new(:slug => "Colon", :name => "Colon_GTExV7", :description => "Colon_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
-    g.save
-    g = HumanTissue.new(:slug => "Esophagus", :name => "Esophagus_GTExV7", :description => "Esophagus_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
-    g.save
-    g = HumanTissue.new(:slug => "Fat_SQ", :name => "Fat SQ_GTExV7", :description => "FatSQ_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
-    g.save
-    g = HumanTissue.new(:slug => "Fat_Visceral", :name => "Fat Visceral_GTExV7", :description => "FatVisceral_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
-    g.save
-    g = HumanTissue.new(:slug => "Heart_Atrial", :name => "Heart Atrial_GTExV7", :description => "HeartAtrial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
-    g.save
-    g = HumanTissue.new(:slug => "Liver", :name => "Liver_GTExV7", :description => "Liver_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
-    g.save
-    g = HumanTissue.new(:slug => "Lung", :name => "Lung_GTExV7", :description => "Lung_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
-    g.save
-    g = HumanTissue.new(:slug => "Nerve_Tibial", :name => "Nerve Tibial_GTExV7", :description => "NerveTibial_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
-    g.save
-    g = HumanTissue.new(:slug => "Pituitary", :name => "Pituitary_GTExV7", :description => "Pituitary_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
-    g.save
-    g = HumanTissue.new(:slug => "Thyroid", :name => "Thyroid_GTExV7", :description => "Thyroid_V7FILTER_Random160SamplesMAXJakeoGram", :gene_chip_id => a.id)
+    g = HumanTissue.new(:slug => "PnG_arm_epidermis", :name => "P&G Arm Epidermis", :description => "P&G arm epidermis", :gene_chip_id => a.id)
     g.save
 
     puts "=== Test human tissue data inserted ==="
@@ -65,26 +40,28 @@ namespace :seedGTEx do
     puts "=== Raw Data insert starting ==="
     count = 0
     buffer = []
-    File.open("#{RAILS_ROOT}/raw_data/PhasevsTMPInfo.txt","r").each do |line|
+    File.open("#{RAILS_ROOT}/raw_data/PnG_PhasevsTMPInfo.txt","r").each do |line|
       count += 1
       if count > 1
         line = line.gsub('"','')
         line = line.split(" ")
 
-        tissue = line[2]
-        time_points = line[3].split(",")
-        data_points = line[4].split(",")
+        tissue = line[1]
+        time_points = line[2]
+        data_points = line[3]
+        #time_points = line[2].split(",")
+        #data_points = line[3].split(",")
 
-        info = []
-        time_points.each_with_index do |time, index|
-          info.push([time,data_points[index]])
-        end
+        #info = []
+        #time_points.each_with_index do |time, index|
+        #  info.push([time,data_points[index]])
+        #end
 
-        info = info.sort_by{|time,data| time}
-        time_points = info.map{|time,data| time.to_f}
-        data_points = info.map{|time,data| data.to_f}
+        #info = info.sort_by{|time,data| time}
+        #time_points = info.map{|time,data| time.to_f}
+        #data_points = info.map{|time,data| data.to_f}
 
-        gene_symbol = line[1].gsub('"','')
+        gene_symbol = line[0].gsub('"','')
         psid = probesets[gene_symbol]
         #if !psid.blank?
         #  buffer << [a.id(), a.slug, psid, gene_symbol, time_points.to_json, data_points.to_json]
@@ -120,11 +97,11 @@ namespace :seedGTEx do
     cur_tissue = ""
     tissueID = nil
 
-    CSV.foreach("#{RAILS_ROOT}/raw_data/GTExv7CircAtlas_CoReg_withEntrezIDs.csv") do |row|
+    CSV.foreach("#{RAILS_ROOT}/raw_data/PnG_Arm_Epidermis_Cosinor.csv") do |row|
       count += 1
-      if count > 1 && row[3] != "NA"  #skip first line for header, skip if no hgnc_symbol available
+      if count > 1 #skip first line for header, skip if no hgnc_symbol available
         psname = row[0]
-        tissue = row[4].gsub(" ","_")
+        tissue = "PnG_arm_epidermis"
 
         if cur_tissue != tissue   # reset humandata info if tissue name changed
           cur_tissue = tissue
@@ -140,7 +117,15 @@ namespace :seedGTEx do
 
         psid = probesets[psname]
         hdid = humandata[psname]
-        buffer << [tissueID, tissue, hdid, psid, psname] + row[5...12].to_a
+        phase = (row[5].to_f + 2*Math::PI) % (2*Math::PI)
+        pval = row[3]
+        fdr = row[11]
+        rsqr = row[9]
+        ramp = row[12]
+        fitmean = row[7]
+        amp = row[6]
+
+        buffer << [tissueID, tissue, hdid, psid, psname, phase, pval, fdr, rsqr, ramp, fitmean, amp]
         if count % 1000 == 0
           HumanStat.import(fields,buffer)
           buffer = []
@@ -162,7 +147,7 @@ namespace :seedGTEx do
   end
 
   desc "Loads all seed data into the DB"
-  task :all => [:human_tissues, :datas, :stats] do
+  task :all => [:assays, :datas, :stats] do
   end
 
   task :delete_from_data => :environment do
@@ -195,20 +180,6 @@ namespace :seedGTEx do
     c.execute "delete from human_stats"
   end
 
-  desc "Warning: Deletes all content"
-  task :delete_from_all => :environment do
-    c = ActiveRecord::Base.connection
-    c.execute "delete from gene_chips"
-    c.execute "delete from assays"
-    c.execute "delete from human_tissues"
-    c.execute "delete from probesets"
-    c.execute "delete from probeset_stats"
-    c.execute "delete from probeset_datas"
-    c.execute "delete from human_datas"
-    c.execute "delete from human_stats"
-    puts "=== delete_from_all done!"
-  end
-
   desc "Build the sphinx index"
   task :build_sphinx => ["ts:stop", "ts:config", "ts:rebuild", "ts:start"]
 
@@ -216,7 +187,7 @@ namespace :seedGTEx do
   #task :fill => [:delete_from_all, :genechips,
   #  :mouse430_probesets, :u74av1_probesets, :gnf1m_probesets, :hugene_probesets,
   #  :mogene_probesets, :assays, :datas, :human_tissues, :stats, :refbackfill, :build_sphinx]
-  task :fill => [:delete_from_human, :assays, :datas, :stats]
+  task :fill => [:assays, :datas, :stats]
   #task :fill => [:stats]
 
   desc "Reset human stats"

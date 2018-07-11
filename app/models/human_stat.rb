@@ -31,7 +31,7 @@ class HumanStat < ActiveRecord::Base
         indexes probeset.#{m}, :as => :#{m}
         EOF
     end
-  #  # define filter attributes
+    # define filter attributes
     has human_tissue_id, cyclop_p_value, cyclop_FDR_value, cyclop_phase, cyclop_rsqr, cyclop_rAMP
   end
 
